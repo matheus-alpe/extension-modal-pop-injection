@@ -1,31 +1,30 @@
 //background.js
-let tabId = null
 
 async function getCurrentTab() {
   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true, url: ["https://*/*", "http://*/*"]  });
   return tab;
 }
 
-function injectContentScript(file) {
-  if (!tabId) return
+function injectContentScript(tabId, file) {
   chrome.scripting.executeScript({
-    target: {
-      tabId
-    },
-    files: [
-      file
-    ],
+    target: { tabId },
+    files: [file],
   });
 }
 
-chrome.action.onClicked.addListener(async () => {
+async function initializeModal () {
   const tab = await getCurrentTab()
   if (!tab) return
-  tabId = tab.id
-  injectContentScript('content.js')
-})
+  injectContentScript(tab.id, 'content.js')
+}
 
-chrome.runtime.onMessage.addListener((param) => {
-  console.log('message', param)
-  injectContentScript('delete-content.js')
-});
+async function deleteModal () {
+  const tab = await getCurrentTab()
+  if (!tab) return
+  console.log('message', arguments)
+  injectContentScript(tab.id, 'delete-content.js')
+}
+
+chrome.action.onClicked.addListener(initializeModal)
+
+chrome.runtime.onMessage.addListener(deleteModal);
