@@ -1,15 +1,28 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import "./App.css";
 
-declare var chrome: any;
+import { emitMessage, set, get } from "./utils";
+
+const fetchStorage = async (callback: Function) => {
+  const response = await get("count");
+  callback(response.count);
+};
 
 function App() {
   const [count, setCount] = useState(0);
 
-  const emitMessage = () => {
-    chrome.runtime.sendMessage({ message: "oi dentro do app" });
-  };
+  async function handleCounterClick() {
+    setCount((count) => {
+      const result = count + 1;
+      set("count", result);
+      return result;
+    });
+  }
+
+  useEffect(() => {
+    fetchStorage(setCount);
+  }, []);
 
   return (
     <div className="App">
@@ -21,18 +34,12 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1 onClick={emitMessage}>Emit message on click here!</h1>
+      <h1 onClick={() => emitMessage("close-modal")}>
+        Click here to close modal!
+      </h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+        <button onClick={handleCounterClick}>count is {count}</button>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </div>
   );
 }

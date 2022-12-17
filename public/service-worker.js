@@ -1,4 +1,5 @@
 //background.js
+console.log('service_work started')
 
 async function getCurrentTab() {
   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true, url: ["https://*/*", "http://*/*"]  });
@@ -18,13 +19,21 @@ async function initializeModal () {
   injectContentScript(tab.id, 'content.js')
 }
 
-async function deleteModal () {
+async function messageHandler ({ message }) {
+  console.log('message handler:', message)
+
   const tab = await getCurrentTab()
   if (!tab) return
-  console.log('message', arguments)
-  injectContentScript(tab.id, 'delete-content.js')
+
+  if (message === 'close-modal') {
+    injectContentScript(tab.id, 'delete-content.js')
+  }
 }
 
 chrome.action.onClicked.addListener(initializeModal)
 
-chrome.runtime.onMessage.addListener(deleteModal);
+chrome.runtime.onMessage.addListener(messageHandler);
+
+chrome.storage.onChanged.addListener((storageDifference) => {
+  console.log('diff chrome.storage.onChanged:', storageDifference)
+});

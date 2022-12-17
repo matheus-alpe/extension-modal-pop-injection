@@ -2,12 +2,12 @@ function createIframe() {
   const iframeId = 'redirect-switch-modal'
   const iframeAlreadyExist = document.getElementById(iframeId)
   if (iframeAlreadyExist) {
-    chrome.runtime.sendMessage({ message: "oi dentro do app" });
+    chrome.runtime.sendMessage({ message: 'close-modal' });
     return
   }
 
-  const iframe = document.createElement("iframe");
-  iframe.src = chrome.runtime.getURL("index.html");
+  const iframe = document.createElement('iframe');
+  iframe.src = chrome.runtime.getURL('index.html');
 
   iframe.setAttribute('id', iframeId)
   iframe.setAttribute('style', `

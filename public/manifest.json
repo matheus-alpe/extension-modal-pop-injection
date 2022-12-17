@@ -7,7 +7,7 @@
   "background": {
     "service_worker": "service-worker.js"
   },
-  "permissions": ["tabs", "scripting"],
+  "permissions": ["tabs", "scripting", "storage"],
   "web_accessible_resources": [
     {
       "resources": [
